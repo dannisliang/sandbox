@@ -1,0 +1,74 @@
+// http://forum.unity3d.com/threads/edit-terrain-in-real-time.98410/
+/*
+Terrain deformation in real time is going to be a staple of a game I'm considering. It won't need texturing, object placement, etc. , just deformation up and down. The broadness of the deformation in the editor is great, and it's the area of effect that I'm trying to find a way to implement...
+
+Here's something I got from a tut about real time terrain deformation in Unity, and it requires the script to be put onto the terrain object, and for the terrain in the HIERARCHY tab to be dragged onto the MyTerrain slot in the script
+*/
+using UnityEngine;
+using System.Collections;
+
+public class TerrainDeformation_realtime  MonoBehaviour
+{
+	public Terrain myTerrain;
+	int xResolution;
+	int zResolution;
+	float[,] heights;
+
+	void Start()
+	{
+		xResolution = myTerrain.terrainData.heightmapWidth;
+		zResolution = myTerrain.terrainData.heightmapHeight;
+		heights = myTerrain.terrainData.GetHeights(0,0,xResolution,zResolution);
+	}
+
+	void Update()
+	{
+		if(Input.GetMouseButton(0))
+		{
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if(Physics.Raycast(ray, out hit))
+			{
+				raiseTerrain(hit.point);
+			}
+		}
+		if(Input.GetMouseButton(1))
+		{
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if(Physics.Raycast(ray, out hit))
+			{
+				lowerTerrain(hit.point);
+			}
+		}
+	}
+
+	private void raiseTerrain(Vector3 point)
+	{
+		int terX =(int)((point.x  myTerrain.terrainData.size.x)  xResolution);
+		int terZ =(int)((point.z  myTerrain.terrainData.size.z)  zResolution);
+		float y = heights[terX,terZ];
+		y += 0.001f;
+		float[,] height = new float[1,1];
+		height[0,0] = y;
+		heights[terX,terZ] = y;
+		myTerrain.terrainData.SetHeights(terX, terZ, height);
+	}
+
+	private void lowerTerrain(Vector3 point)
+	{
+		int terX =(int)((point.x  myTerrain.terrainData.size.x)  xResolution);
+		int terZ =(int)((point.z  myTerrain.terrainData.size.z)  zResolution);
+		float y = heights[terX,terZ];
+		y -= 0.001f;
+		float[,] height = new float[1,1];
+		height[0,0] = y;
+		heights[terX,terZ] = y;
+		myTerrain.terrainData.SetHeights(terX, terZ, height);
+	}
+}
+
+
+/*
+Now, I've changed the GetMouseButtonDown that was originally there to instead say GetMouseButton in order to make the deformation continuous. Still, it only raises up these jagged spikes from the terrain, and I can't see anything in this script which allows me to soften the area of effect. Even better, I'd like to be able to create craggy mountain ranges with a sweep of the player's hand. Not sure how to approach this, and ultimately hope to have such an effect with marching cubes terrain or some other large scale procedural method. If anyone can offer useable insight in how I can soften the effect, please let me know.
+*/
