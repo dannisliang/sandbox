@@ -1,7 +1,15 @@
-﻿using UnityEngine;
+﻿/**************************************************************************
+ * SANDBOX
+ * An interactive first-person terrain-sculpting engine for Unity3D
+ * 
+ * A project by Jose Luis Garcia del Castillo & Nathan Melenbrink
+ * https://github.com/garciadelcastillo/sandbox
+ **************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // used for Sum of array
+using System.Linq; 					// used for Sum of array
 
 public class Terrain_holistic : MonoBehaviour {
 
@@ -44,7 +52,7 @@ public class Terrain_holistic : MonoBehaviour {
 	private GameObject FPC;					// First Person Controller
 	private CharacterController FPCCont;	// the controller object
 	private Camera FPCCamera;				// the FPC camera
-	private MouseLook FPCCameraScript;
+	//private MouseLook FPCCameraScript;
 	private Camera orbitCamera;				// the god-like orbiting camera
 	private maxCamera orbitCameraScript;
 	private GameObject dirLightObj;			// main directional light object [debug] 
@@ -56,8 +64,6 @@ public class Terrain_holistic : MonoBehaviour {
 	private bool geoTimeScale = false;		// are we on Geological Time Scale ?
 	private int year = 0;					// fictional year measure
 	private Vector3 prevPosition;			// buffer human position before going into god mode
-
-	// Actions
 
 	// UI
 	private const int TERRAFORM = 0, MOUNTAIN = 1, WATER = 2;
@@ -86,11 +92,10 @@ public class Terrain_holistic : MonoBehaviour {
 		FPC = GameObject.Find ("First Person Controller");
 		FPCCont = FPC.GetComponent<CharacterController> ();
 		FPCCamera = GameObject.Find ("FPCamera").GetComponent<Camera>();
-		FPCCameraScript = GameObject.Find ("FPCamera").GetComponent<MouseLook>();
-//		FPCCameraScript.enabled = true;
+		//FPCCameraScript = GameObject.Find ("FPCamera").GetComponent<MouseLook>();
+
 		orbitCamera = GameObject.Find ("GodCamera").GetComponent<Camera>();
 		orbitCameraScript = GameObject.Find ("GodCamera").GetComponent<maxCamera> ();
-//		orbitCameraScript.enabled = false;
 
 		dirLightObj = GameObject.Find ("base_sun");
 		dirLight = dirLightObj.GetComponent<Light> ();
@@ -98,7 +103,7 @@ public class Terrain_holistic : MonoBehaviour {
 		cursorProjector.orthographic = true;
 		cursorProjector.orthographicSize = pullRadius;
 
-		// Refit terrain under certain flags
+		// Refit terrain under certain UI flags
 		if (resizeOnStart) {
 			resizeTerrain(newX, newY, newX);
 		}
@@ -111,24 +116,13 @@ public class Terrain_holistic : MonoBehaviour {
 
 		// Apply new Textures based on terrain topology
 		splatmapData = new float[thisTerrain.terrainData.alphamapWidth, thisTerrain.terrainData.alphamapHeight, thisTerrain.terrainData.alphamapLayers];
-		clearAlphaMaps (); // Set Alpha Map to solid black
-		applyTexture ();  // Apply Alpha Map according to start configuration
+		clearAlphaMaps (); 		// set Alpha Map to solid black
+		applyTexture ();  		// apply Alpha Map according to start configuration
 
 		// Set the FPC's position to sit on top of Terrain's center
 		float h = thisTerrain.terrainData.GetInterpolatedHeight(0.5f, 0.5f);
 		Vector3 terrCenter = new Vector3 (size.x / 2, h + FPCCont.height / 2 + 1, size.z / 2);
 		FPC.transform.position = terrCenter;
-
-		// TEST: FIRE WATER BASINS ON A GRID
-//		for (int i = 100; i < 1000; i += 100){
-//			for (int j = 100; j < 1000; j += 100){
-//				Vector3 p = new Vector3(i, 
-//				            			thisTerrain.terrainData.GetInterpolatedHeight( (float) (i) / 1000, (float) (j) / 1000 ),
-//				                        j);
-//				WaterSeed ws = new WaterSeed(this, p, pullRadius);
-//				waterSpots.Add(ws);
-//			}
-//		}
 
 	}
 
@@ -142,7 +136,6 @@ public class Terrain_holistic : MonoBehaviour {
 //	 ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
 	// Update is called once per frame
 	void Update () {
-
 		// Pre-update state-based vars
 		frame++;
 
@@ -241,7 +234,7 @@ public class Terrain_holistic : MonoBehaviour {
 			// Apply textures on human terraforming mouse up
 			if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp (1)) {
 				switch(cursorMode) {
-					// push/pull terrain
+				// push/pull terrain
 				case TERRAFORM:
 					if(wasHit) {
 						//applyTexture();
@@ -254,8 +247,6 @@ public class Terrain_holistic : MonoBehaviour {
 			// If scrollwheel, update pullRadius and cursorProjector
 			float wheel = Input.GetAxis("Mouse ScrollWheel");
 			if (wheel != 0) {
-				//float dr = wheel > 0 ? wheelIncrement : -wheelIncrement;
-				//pullRadius += dr;
 				pullRadius *= wheel > 0 ? wheelIncrement : ( 1/ wheelIncrement);
 				cursorProjector.orthographicSize = pullRadius;
 			}
@@ -270,7 +261,7 @@ public class Terrain_holistic : MonoBehaviour {
 			// Update GUI elements
 			labelContent.text = "Year " + year.ToString() + "...";
 
-			// call the main function with terrain modifications for this mode
+			// Call the main function with terrain modifications for this mode
 			geoTimeTerrainMod();
 		}
 
@@ -289,9 +280,9 @@ public class Terrain_holistic : MonoBehaviour {
 		if (geoTimeScale) GUI.Label (new Rect (25, 50, 200, 30), labelContent);
 	}
 
-	/**
+	/******************************
 	 * DEBUG GIZMO DISPLAY
-	 **/
+	 ******************************/
 	void OnDrawGizmos() {
 		if (riverGizmos) {
 			Gizmos.color = Color.blue;
@@ -304,10 +295,6 @@ public class Terrain_holistic : MonoBehaviour {
 			}
 		}
 	}
-
-
-
-
 
 
 
@@ -338,7 +325,7 @@ public class Terrain_holistic : MonoBehaviour {
 
 	/**
 	 * This is the main function called when on geoTimeScale. 
-	 * Add here the list of things that should happen while on this mode
+	 * Add here the list of things that should happen while on this mode.
 	 */
 	private void geoTimeTerrainMod() {
 		for (int i = 0; i < mountainSpots.Count; i++) {
@@ -364,19 +351,17 @@ public class Terrain_holistic : MonoBehaviour {
 
 
 	/**
-	 * Sets a new size for the passed terrain
+	 * Sets a new size for the passed terrain.
 	 */
-	private void resizeTerrain (float newX, float newY, float newZ)
-	{
+	private void resizeTerrain (float newX, float newY, float newZ) {
 		Vector3 s = new Vector3 (newX, newY, newZ);
 		thisTerrain.terrainData.size = s;
 	}
 
 	/**
-	 * Sets all the height of the terrain to the same target normalized height
+	 * Sets all the height of the terrain to the same target normalized height.
 	 */
-	private void flattenTerrain (float newRelHeight)
-	{
+	private void flattenTerrain (float newRelHeight) {
 		for (int i = 0; i < xRes; i++) {
 			for (int j = 0; j < zRes; j++) {
 				heights[i, j] = newRelHeight;
@@ -387,20 +372,18 @@ public class Terrain_holistic : MonoBehaviour {
 	
 	/**
 	 * Given the RaycastHit object, and a pull/push flag, performs pull/push 
-	 * modifications at the human scale in the terrain
+	 * modifications at the human scale in the terrain.
 	 */
-	//private void humanPullTerrain(RaycastHit hit, bool isPull)
-	private void humanPullTerrain(Vector3 point, bool isPull)
-	{
-		// world coordinates of hit center
+	private void humanPullTerrain(Vector3 point, bool isPull) {
+		// World coordinates of hit center
 		float x = point.x;
 		float z = point.z;
 
-		// set the domain limits for vertices this pull will affect
+		// Set the domain limits for vertices this pull will affect
 		int u0, uCount, v0, vCount;
 		getPixelLimits (point, pullRadius, out u0, out v0, out uCount, out vCount);
 
-		// compute pull/push
+		// Compute pull/push
 		float[,] pullPatch = thisTerrain.terrainData.GetHeights (u0, v0, uCount, vCount);   // WARNING: pullPatch has dimensions float[vCount, uCount] !
 		Vector2 pHit2 = new Vector2 (x, z);
 		for (int i = 0; i < uCount ; i++) {
@@ -424,7 +407,6 @@ public class Terrain_holistic : MonoBehaviour {
 						break;
 
 					case(pullFallOffType.Gauss):
-						//return Mathf.Clamp01 (Mathf.Pow (360.0, -Mathf.Pow (distance / inRadius, 2.5) - 0.01));
 						delta = pullStrength * Mathf.Clamp01(Mathf.Pow(360.0f, -Mathf.Pow(dist / pullRadius, 2.5f) - 0.01f));
 						break;
 
@@ -446,9 +428,8 @@ public class Terrain_holistic : MonoBehaviour {
 	}
 
 
-	private bool getPixelLimits (Vector3 location, float radius, out int minU, out int minV, out int uCount, out int vCount)
-	{
-		// is point inside terrain? (assuming terrain origin is on 0,0)
+	private bool getPixelLimits (Vector3 location, float radius, out int minU, out int minV, out int uCount, out int vCount) {
+		// Is point inside terrain? (assuming terrain origin is on 0,0)
 		if (location.x < 0 || location.x > size.x || location.z < 0 && location.z > size.z) {
 			minU = uCount = minV = vCount = 0;
 			return false;
@@ -467,11 +448,9 @@ public class Terrain_holistic : MonoBehaviour {
 		vCount = maxV - minV + 1;
 
 		return true;
-
 	}
 
-	private void perlinTerrain()
-	{
+	private void perlinTerrain() {
 		Random.seed = System.DateTime.Now.Millisecond;
 		float off = Random.Range(0.0f,100.0f);
 		float tileSize = 3.0f;
@@ -488,20 +467,13 @@ public class Terrain_holistic : MonoBehaviour {
 	}
 
 	
-	private void GradientErode ()
-	{
+	private void GradientErode () {
 		float[,] arrHeights = thisTerrain.terrainData.GetHeights (0, 0, xRes, zRes);   // WARNING: pullPatch has dimensions float[vCount, uCount] !
-		
-		//int x = (int) Random.Range (0, xRes-1);
-		//int z = (int) Random.Range (0, zRes-1);
-		
-		for (int i = 0; i < xRes; i++) { //xRes
-			for (int j = 0; j < zRes; j++) { //zRes
-				
-				Vector3 nv = thisTerrain.terrainData.GetInterpolatedNormal((float)(i)/xRes,(float)(j)/zRes); // get the terrain normal for vertex
-				//Vector3 dv = Vector3.Cross (nv, Vector3.up); // find the cross product of the normal and world up vector
+
+		for (int i = 0; i < xRes; i++) { 			//xRes
+			for (int j = 0; j < zRes; j++) { 		//zRes
+				Vector3 nv = thisTerrain.terrainData.GetInterpolatedNormal((float)(i)/xRes,(float)(j)/zRes);  // get the terrain normal for vertex
 				nv.Normalize ();
-				//Vector3 rv = Quaternion.AngleAxis (90, nv) * dv;
 				arrHeights[j, i] -= nv.y;		
 			}
 		}
@@ -510,36 +482,31 @@ public class Terrain_holistic : MonoBehaviour {
 	}
 	
 	
-	private void SteepnessErode ()
-	{
+	private void SteepnessErode () {
 		float[,] arrHeights = thisTerrain.terrainData.GetHeights (0, 0, xRes, zRes);   // WARNING: pullPatch has dimensions float[vCount, uCount] !
-		for (int i = 0; i < xRes; i++) { //xRes
-			for (int j = 0; j < zRes; j++) { //zRes
-				
+		for (int i = 0; i < xRes; i++) { 			//xRes
+			for (int j = 0; j < zRes; j++) { 		//zRes
 				float steep = thisTerrain.terrainData.GetSteepness(((float)(i)/xRes),((float)(j)/zRes));
-				
-				arrHeights[j, i] -= steep/50000;//(nv.y/100);   
+				arrHeights[j, i] -= steep/50000;	//(nv.y/100);   
 			}
 		}
 		heights = arrHeights;
 		thisTerrain.terrainData.SetHeights (0, 0, arrHeights);
-		
 	}
 	
-	private void WindErode (){
+	private void WindErode () {
 		float[,] arrHeights = thisTerrain.terrainData.GetHeights (0, 0, xRes, zRes);   // WARNING: pullPatch has dimensions float[vCount, uCount] !
-		for (int i = 0; i < xRes; i++) { //xRes
-			for (int j = 0; j < zRes; j++) { //zRes
+		for (int i = 0; i < xRes; i++) { 			//xRes
+			for (int j = 0; j < zRes; j++) { 		//zRes
 				float steep = thisTerrain.terrainData.GetSteepness(((float)(i)/xRes),((float)(j)/zRes));
-				arrHeights[j, i] -= steep/50000;//(nv.y/100);		
+				arrHeights[j, i] -= steep/50000;	//(nv.y/100);		
 			}
 		}
 		heights = arrHeights;
 		thisTerrain.terrainData.SetHeights (0, 0, arrHeights);
 	}
 
- public void applyTexture()
-	{
+ 	public void applyTexture() {
 		splatmapData = thisTerrain.terrainData.GetAlphamaps(0, 0, thisTerrain.terrainData.alphamapWidth, thisTerrain.terrainData.alphamapHeight);
 
 		for (int x = 0; x < thisTerrain.terrainData.alphamapWidth; x++) {
@@ -549,7 +516,7 @@ public class Terrain_holistic : MonoBehaviour {
 				float x_01 = (float)x / (float)thisTerrain.terrainData.alphamapWidth;
 				
 				// Calculate the normal 
-				Vector3 normal = thisTerrain.terrainData.GetInterpolatedNormal (z_01, x_01);
+				//Vector3 normal = thisTerrain.terrainData.GetInterpolatedNormal (z_01, x_01);
 				float steepness = thisTerrain.terrainData.GetSteepness (z_01, x_01);
 
 				// Declare a list of floats to hold the array of alpha values
@@ -557,37 +524,28 @@ public class Terrain_holistic : MonoBehaviour {
 
 				// splatVals[0] (Soil) represents the base texture
 				splatVals [0] = 0.5f;
-
-				splatVals [2] = 1f;
-				//if (steepness > rockSlope){
-					splatVals [2] = 1.0f - Mathf.Clamp01 (steepness * steepness / (thisTerrain.terrainData.heightmapHeight / 5.0f));
-				//}
-				
-	
 				splatVals [1] = Mathf.Clamp01 (steepness * steepness / (thisTerrain.terrainData.heightmapHeight / 0.05f));
+				splatVals [2] = 1.0f - Mathf.Clamp01 (steepness * steepness / (thisTerrain.terrainData.heightmapHeight / 5.0f));
 					
 				// Sum of all splat date must = 1
 				float n = splatVals.Sum ();
 				
 				// Each layer gets normalized so the sum = 1
 				for (int i = 0; i<thisTerrain.terrainData.alphamapLayers; i++) {
-					
 					// Normalize so that sum of all texture weights = 1
 					splatVals [i] /= n;
 					
 					// Assign this point to the splatmap array
 					splatmapData [x, z, i] = splatVals [i];
-					}
+				}
 			}
 		}
-		// and finally assign the new splatmap to the terrainData:
+		// And finally assign the new splatmap to the terrainData:
 		thisTerrain.terrainData.SetAlphamaps(0, 0, splatmapData);
 		
 	}
 
-	public void clearAlphaMaps()
-	{
-		
+	public void clearAlphaMaps() {
 		for (int x = 0; x < thisTerrain.terrainData.alphamapWidth; x++) {
 			for (int z = 0; z < thisTerrain.terrainData.alphamapHeight; z++) {
 				for (int k = 0; k < thisTerrain.terrainData.alphamapLayers; k++) {
@@ -597,11 +555,8 @@ public class Terrain_holistic : MonoBehaviour {
 		}
 		
 		thisTerrain.terrainData.SetAlphamaps(0, 0, splatmapData);
-		//Debug.Log("cleared");
-		
 	}
-
-
+	
 	public Vector2 worldToTerrainUV(Vector3 point) {
 		return new Vector2 (point.x / size.x, point.z / size.z);
 	}
@@ -635,17 +590,17 @@ public class Terrain_holistic : MonoBehaviour {
 				hit[I, J] = true;
 				basinHitCount++;
 
-				// compute neighbour# and strength based on steepness and relative length run
+				// Compute neighbour# and strength based on steepness and relative length run
 				int N = (int) (ws.basinVertices[j].normal.y * fn * (basinHitCount / 10)) + 1;  // affect more neighbors if flatter
 				float strength = ws.erosionStrength * (1 - ws.basinVertices[j].normal.y);     // erode less if flatter
 
-				// center
+				// Center
 				prevH[J, I] -= scale * strength;	
 
 				for (int u = -N; u <= N; u++) {
-					if (I + u < 0 || I + u > xRes) continue;  // if outside terrain heightmap pixels
+					if (I + u < 0 || I + u > xRes) continue;  		// if outside terrain heightmap pixels
 					for (int v = -N; v <= N; v++) {
-						if (J + v < 0 || J + v > zRes) continue;  // if outside terrain heightmap pixels
+						if (J + v < 0 || J + v > zRes) continue;  	// if outside terrain heightmap pixels
 
 						prevH[J + v, I + u] -= scale * strength 
 							- scale * strength * Mathf.Clamp01( (u*u + v*v) / (N*N) );  // note flipped i,j here
@@ -658,8 +613,6 @@ public class Terrain_holistic : MonoBehaviour {
 		}
 
 		thisTerrain.terrainData.SetHeights (0, 0, prevH);
-//		Debug.Log ("hit " + hitCount.ToString ());
-		
 	}
 
 	public void storeCurrentPosition() {
@@ -675,7 +628,6 @@ public class Terrain_holistic : MonoBehaviour {
 
 	public void toggleMainCamera() {
 		FPCCamera.enabled = !FPCCamera.enabled;
-//		FPCCameraScript.enabled = !FPCCameraScript.enabled;
 		orbitCamera.enabled = !orbitCamera.enabled;
 		orbitCameraScript.enabled = !orbitCameraScript.enabled;
 	}
@@ -688,7 +640,7 @@ public class Terrain_holistic : MonoBehaviour {
 		mountainSpots = new List<MountainSeed>();
 		waterSpots = new List<WaterSeed>();
 		year = 0;
-		Start ();
+		Start();
 	}
 
 
@@ -783,7 +735,7 @@ public class Terrain_holistic : MonoBehaviour {
 			u0 = Mathf.RoundToInt (position.x / T.size.x * T.xRes - perlinU / 2);
 			v0 = Mathf.RoundToInt (position.z / T.size.z * T.zRes - perlinV / 2);
 
-			// some sanity
+			// Some sanity
 			if (u0 + perlinU > T.xRes) {
 				perlinU = T.xRes - u0 - 1; 
 			}
@@ -805,9 +757,6 @@ public class Terrain_holistic : MonoBehaviour {
 				active = false;
 		}
 
-
-
-
 		public void logPerlin() {
 			string l = "";
 			for (int i = 0; i < perlinU; i++) {
@@ -819,8 +768,7 @@ public class Terrain_holistic : MonoBehaviour {
 			Debug.Log (l);
 		}
 
-		public override string ToString ()
-		{
+		public override string ToString () {
 			return string.Format ("p = {0}, r = {1}", position.ToString(), radius.ToString());
 		}
 
@@ -859,10 +807,6 @@ public class Terrain_holistic : MonoBehaviour {
 			Vector3 n = T.thisTerrain.terrainData.GetInterpolatedNormal(uv.x, uv.y);
 			source = new BasinVertex(_position, uv, n);
 
-//			Debug.Log(_position.ToString());
-//			Debug.Log (uv.ToString());
-//			Debug.Log (n.ToString());
-
 			updateBasin();
 		}
 
@@ -881,7 +825,6 @@ public class Terrain_holistic : MonoBehaviour {
 			}
 		}
 
-
 		private void updateBasin() {
 			// Reset collection
 			basinVertices = new List<BasinVertex>();
@@ -897,18 +840,15 @@ public class Terrain_holistic : MonoBehaviour {
 
 			BasinVertex prev = source;
 
-			// gradient descent (gross sort of...)
+			// Gradient descent (gross sort of...)
 			while (step < safe) {
 				Vector3 p = prev.position + 10 * prev.normal;
 				Vector2 puv = T.worldToTerrainUV(p);
 				Vector3 pn = T.thisTerrain.terrainData.GetInterpolatedNormal(puv.x, puv.y);
 				Vector3 pp = T.terrainUVToWorld(puv);
-				// reached a local minimum?
-				if (pn.y > minimaLimit) {
-					//Debug.Log("Local minimum at " + pp.ToString() + ", n.y: " + pn.y.ToString());
-					break;  
-				}
-				
+
+				// Reached a local minimum?
+				if (pn.y > minimaLimit) break;  
 
 				BasinVertex v = new BasinVertex(pp, puv, pn);
 				basinVertices.Add(v);
@@ -916,13 +856,9 @@ public class Terrain_holistic : MonoBehaviour {
 				prev = v;
 				step++;
 			}
-
-			//Debug.Log ("computed " + basinVertices.Count.ToString() + " basin points");
-
 		}
 
-		public override string ToString ()
-		{
+		public override string ToString () {
 			return string.Format ("p = {0}, n = {1}", source.position.ToString(), source.normal.ToString());
 		}
 	}
