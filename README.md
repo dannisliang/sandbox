@@ -1,6 +1,8 @@
 ## Sandbox
 
-![Sandbox](https://github.com/garciadelcastillo/sketchpad.js/blob/master/Assets/Videos/sandbox_erosion_955x460.gif "Sandbox - First person real-time interactive terrain sculpting tool")
+![Sandbox](https://github.com/garciadelcastillo/sandbox/blob/master/Assets/Videos/sandbox_erosion_955x460.gif "Sandbox - First person real-time interactive terrain sculpting tool")
+
+
 
 Sandbox is a Temporal Terrain Modelling Software built with Unity. It combines first-person perspective modeling with time-based simulations of erosion and deposition. 
 
